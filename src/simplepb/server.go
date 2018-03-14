@@ -172,7 +172,7 @@ func (srv *PBServer) Start(command interface{}) (
 	view = srv.currentView
 	ok = true
 	log_len := len(srv.log)
-	docommit := 0
+	docommit := make(chan bool, len(srv.peers))
 	// Your code here
 	for i := 0; i < len(srv.peers); i++ {
 		go func(server int, view int, primary_idx int, log_len int, entry interface{}) {
@@ -186,7 +186,7 @@ func (srv *PBServer) Start(command interface{}) (
 			//send_pre := 
 			srv.sendPrepare(server, &args ,&reply)
 			if(reply.Success){
-				fmt.Printf("docommit: %d, peers: %d\n", docommit, len(srv.peers))
+				//fmt.Printf("docommit: %d, peers: %d\n", docommit, len(srv.peers))
 				docommit = docommit+1
 				if(docommit == len(srv.peers)/2 +1){
 					srv.commitIndex = srv.commitIndex+1
@@ -202,7 +202,7 @@ func (srv *PBServer) Start(command interface{}) (
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
 		}(i, view, index, log_len, srv.log[log_len-1])
 	}
-	return index, view, ok
+	return index+1, view, ok
 }
 
 // exmple code to send an AppendEntries RPC to a server.
