@@ -172,7 +172,8 @@ func (srv *PBServer) Start(command interface{}) (
 	view = srv.currentView
 	ok = true
 	// Your code here
-	fmt.Printf("commitIndex: %d\n", srv.commitIndex)
+	//fmt.Printf("commitIndex: %d\n", srv.commitIndex)
+	fmt.Printf("log len: %d\n", len(srv.log))
 	go func(prm_sv *PBServer, command interface{}) {
 		count := 0
 		for i := 0; i < len(prm_sv.peers); i++ {
@@ -188,9 +189,9 @@ func (srv *PBServer) Start(command interface{}) (
 			if(reply.Success){
 				fmt.Printf("docommit: %d, peers: %d\n", count, len(prm_sv.peers))
 				count = count + 1
-				if(count == len(prm_sv.peers)/2 +1){
+				/*if(count == len(prm_sv.peers)/2 +1){
 					prm_sv.commitIndex = len(prm_sv.log)
-				}
+				}*/
 			}
 			/*
 			View          int         // the primary's current view
@@ -203,7 +204,7 @@ func (srv *PBServer) Start(command interface{}) (
 		}
 		//fmt.Printf("Index: %d\n", index+1)
 	}(srv, command)
-	//srv.commitIndex = srv.commitIndex+1
+	srv.commitIndex = srv.commitIndex+1
 	return index+1, view, ok
 }
 
