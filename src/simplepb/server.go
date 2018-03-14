@@ -207,7 +207,7 @@ func (srv *PBServer) Start(command interface{}) (
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
 		}(i, view, index, log_len, srv.log[log_len-1])
 	}
-	go func(chan docommit){
+	go func(docommit chan){
 		if(<-docommit){
 			srv.commitIndex = srv.commitIndex+1
 			//for i := 0; i < len(srv.peers); i++ {
