@@ -174,7 +174,7 @@ func (srv *PBServer) Start(command interface{}) (
 	ok = true
 	log_len := len(srv.log)
 	ok_count := 0
-	docommit := make(chan, bool)
+	docommit := make(chan bool)
 	// Your code here
 	for i := 0; i < len(srv.peers); i++ {
 		go func(server int, view int, primary_idx int, log_len int, entry interface{}) {
@@ -193,7 +193,7 @@ func (srv *PBServer) Start(command interface{}) (
 			if(ok_count == len(srv.peers)/2 +1){
 				docommit<-true
 			}
-			else if(i == len(srv.peers)-1){
+			else if(server == len(srv.peers)-1){
 				docommit<-false
 			}
 			/*
