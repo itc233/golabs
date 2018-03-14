@@ -8,7 +8,7 @@ package simplepb
 
 import (
 	"sync"
-	//"fmt"
+
 	"labrpc"
 )
 
@@ -168,13 +168,11 @@ func (srv *PBServer) Start(command interface{}) (
 		return -1, srv.currentView, false
 	}
 	srv.log = append(srv.log, command)
-	//srv.commitIndex = srv.commitIndex+1
+	srv.commitIndex = srv.commitIndex+1
 	index = srv.commitIndex
 	view = srv.currentView
 	ok = true
 	log_len := len(srv.log)
-	ok_count := 0
-	//docommit := make(chan bool, 3)
 	// Your code here
 	for i := 0; i < len(srv.peers); i++ {
 		go func(server int, view int, primary_idx int, log_len int, entry interface{}) {
@@ -186,20 +184,7 @@ func (srv *PBServer) Start(command interface{}) (
 				Entry: entry,
 			}
 			//send_pre := 
-			srv.sendPrepare(server, &args ,&reply)
-			if(reply.Success){
-				ok_count = ok_count+1
-			}
-			if(ok_count == (len(srv.peers)/2 +1)){
-				srv.commitIndex = srv.commitIndex+1
-			}
-			/*if(ok_count == ){
-				fmt.Printf("majority\n")
-				docommit<-true
-			}else if(server == len(srv.peers)-1){
-				fmt.Printf("not majority\n")
-				docommit<-false
-			}*/
+			srv.SendPrepare(server, &args ,&reply)
 			/*
 			View          int         // the primary's current view
 			PrimaryCommit int         // the primary's commitIndex
@@ -210,14 +195,6 @@ func (srv *PBServer) Start(command interface{}) (
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
 		}(i, view, index, log_len, srv.log[log_len-1])
 	}
-	/*go func(docommit chan bool){
-		if(<-docommit){
-			
-			//for i := 0; i < len(srv.peers); i++ {
-			//	srv.
-			//}
-		}
-	}(docommit)*/
 	return index, view, ok
 }
 
@@ -251,14 +228,13 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	Success bool // whether the Prepare request has been accepted or rejected
 	*/
 	reply.View = srv.currentView
-	if(args.View == srv.currentView && args.Index == srv.commitIndex){
+	if(args.View == srv.currentView && args.Index == len(srv.log)){
 		srv.log = append(srv.log, args.Entry)
 		reply.Success = true
-		return
 
 	}else{
 		reply.Success = false
-		if(srv.currentView < args.View || args.Index > srv.commitIndex){
+		if(srv.currentView < args.View || len(srv.log) < args.Index){
 			rec_arg := RecoveryArgs{
 				View: args.View, // the view that the backup would like to synchronize with
 				Server: srv.me, // the server sending the Recovery RPC (for debugging)
