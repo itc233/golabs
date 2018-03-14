@@ -183,7 +183,8 @@ func (srv *PBServer) Start(command interface{}) (
 				Index: log_len-1,
 				Entry: entry,
 			}
-			send_pre := srv.peers[server].Call("PBServer.sendPrepare", &args ,&reply)
+			//send_pre := 
+			srv.peers[server].Call("PBServer.sendPrepare", &args ,&reply)
 			/*
 			View          int         // the primary's current view
 			PrimaryCommit int         // the primary's commitIndex
@@ -240,7 +241,8 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 			}
 			var rec_reply RecoveryReply
 			prim_id := GetPrimary(args.View, len(srv.peers))
-			ok := srv.peers[prim_id].Call("PBServer.Recovery", &rec_arg, &rec_reply)
+			//ok := 
+			srv.peers[prim_id].Call("PBServer.Recovery", &rec_arg, &rec_reply)
 			if(rec_reply.Success){
 				srv.log = rec_reply.Entries
 				srv.currentView = rec_reply.View
