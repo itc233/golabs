@@ -174,7 +174,7 @@ func (srv *PBServer) Start(command interface{}) (
 	ok = true
 	log_len := len(srv.log)
 	ok_count := 0
-	docommit := make(chan bool, 3)
+	//docommit := make(chan bool, 3)
 	// Your code here
 	for i := 0; i < len(srv.peers); i++ {
 		go func(server int, view int, primary_idx int, log_len int, entry interface{}) {
@@ -190,13 +190,16 @@ func (srv *PBServer) Start(command interface{}) (
 			if(reply.Success){
 				ok_count = ok_count+1
 			}
-			if(ok_count == len(srv.peers)/2 +1){
+			if(ok_count == (len(srv.peers)/2 +1)){
+				srv.commitIndex = srv.commitIndex+1
+			}
+			/*if(ok_count == ){
 				fmt.Printf("majority\n")
 				docommit<-true
 			}else if(server == len(srv.peers)-1){
 				fmt.Printf("not majority\n")
 				docommit<-false
-			}
+			}*/
 			/*
 			View          int         // the primary's current view
 			PrimaryCommit int         // the primary's commitIndex
@@ -207,14 +210,14 @@ func (srv *PBServer) Start(command interface{}) (
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
 		}(i, view, index, log_len, srv.log[log_len-1])
 	}
-	go func(docommit chan bool){
+	/*go func(docommit chan bool){
 		if(<-docommit){
-			srv.commitIndex = srv.commitIndex+1
+			
 			//for i := 0; i < len(srv.peers); i++ {
 			//	srv.
 			//}
 		}
-	}(docommit)
+	}(docommit)*/
 	return index, view, ok
 }
 
