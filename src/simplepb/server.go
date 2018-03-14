@@ -240,7 +240,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	Success bool // whether the Prepare request has been accepted or rejected
 	*/
 	reply.View = srv.currentView
-	if(args.View == srv.currentView && args.Index == len(srv.log)){
+	if(args.View == srv.currentView && args.Index <= len(srv.log)){
 		srv.log = append(srv.log, args.Entry)
 		//srv.commitIndex = srv.commitIndex+1
 		srv.commitIndex = args.PrimaryCommit
