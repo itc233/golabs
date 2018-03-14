@@ -174,7 +174,7 @@ func (srv *PBServer) Start(command interface{}) (
 	ok = true
 	log_len := len(srv.log)
 	ok_count := 0
-	docommit := make(chan bool, 2)
+	docommit := make(chan bool, 3)
 	// Your code here
 	for i := 0; i < len(srv.peers); i++ {
 		go func(server int, view int, primary_idx int, log_len int, entry interface{}) {
@@ -191,8 +191,10 @@ func (srv *PBServer) Start(command interface{}) (
 				ok_count = ok_count+1
 			}
 			if(ok_count == len(srv.peers)/2 +1){
+				fmt.Printf("majority\n")
 				docommit<-true
 			}else if(server == len(srv.peers)-1){
+				fmt.Printf("not majority\n")
 				docommit<-false
 			}
 			/*
@@ -205,14 +207,14 @@ func (srv *PBServer) Start(command interface{}) (
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
 		}(i, view, index, log_len, srv.log[log_len-1])
 	}
-	go func(){
+	go func(chan docommit){
 		if(<-docommit){
 			srv.commitIndex = srv.commitIndex+1
 			//for i := 0; i < len(srv.peers); i++ {
 			//	srv.
 			//}
 		}
-	}()
+	}(docommit)
 	return index, view, ok
 }
 
