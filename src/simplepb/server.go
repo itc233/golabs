@@ -175,7 +175,7 @@ func (srv *PBServer) Start(command interface{}) (
 	// Your code here
 	fmt.Printf("commitIndex: %d\n", srv.commitIndex)
 	for i := 0; i < len(srv.peers); i++ {
-		go func(prm_sv *PBServer, command interface{}, server int, count &int) {
+		go func(prm_sv *PBServer, command interface{}, server int, count *int) {
 			var reply PrepareReply
 			args := PrepareArgs{
 				View: prm_sv.currentView,
@@ -186,9 +186,9 @@ func (srv *PBServer) Start(command interface{}) (
 			//send_pre := 
 			prm_sv.sendPrepare(server, &args ,&reply)
 			if(reply.Success){
-				fmt.Printf("docommit: %d, peers: %d\n", count, len(prm_sv.peers))
-				count = count+1
-				if(count == len(prm_sv.peers)/2 +1){
+				fmt.Printf("docommit: %d, peers: %d\n", *count, len(prm_sv.peers))
+				*count = *count + 1
+				if(*count == len(prm_sv.peers)/2 +1){
 					prm_sv.commitIndex = prm_sv.commitIndex+1
 				}
 			}
