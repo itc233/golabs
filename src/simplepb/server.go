@@ -239,7 +239,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 				Server: srv.me, // the server sending the Recovery RPC (for debugging)
 			}
 			var rec_reply RecoveryReply
-			ok := srv.Call("PBServer.Recovery", &rec_arg, &rec_reply)
+			ok := srv.peers[srv.me].Call("PBServer.Recovery", &rec_arg, &rec_reply)
 		}
 	}
 }
@@ -252,10 +252,10 @@ func (srv *PBServer) Recovery(args *RecoveryArgs, reply *RecoveryReply) {
 
 	srv.currentView = args.View
 	prim_id := GetPrimary(srv.currentView, len(srv.peers))
-	src.log = src.peers[prim_id].log
-	reply.View = src.peers[prim_id].currentView
-	reply.Entries = src.peers[prim_id].log
-	reply.PrimaryCommit = src.peers[prim_id].commitIndex
+	src.log = srv.peers[prim_id].log
+	reply.View = srv.peers[prim_id].currentView
+	reply.Entries = srv.peers[prim_id].log
+	reply.PrimaryCommit = srv.peers[prim_id].commitIndex
 	reply.Success = true
 	/*
 	View          int           // the view of the primary
