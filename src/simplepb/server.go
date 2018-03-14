@@ -188,9 +188,9 @@ func (srv *PBServer) Start(command interface{}) (
 			if(reply.Success){
 				fmt.Printf("docommit: %d, peers: %d\n", count, len(prm_sv.peers))
 				count = count + 1
-				if(count == len(prm_sv.peers)/2 +1){
+				/*if(count == len(prm_sv.peers)/2 +1){
 					prm_sv.commitIndex = prm_sv.commitIndex+1
-				}
+				}*/
 			}
 			/*
 			View          int         // the primary's current view
@@ -203,6 +203,7 @@ func (srv *PBServer) Start(command interface{}) (
 		}
 		//fmt.Printf("Index: %d\n", index+1)
 	}(srv, command)
+	srv.commitIndex = srv.commitIndex+1
 	return index+1, view, ok
 }
 
