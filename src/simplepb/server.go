@@ -243,6 +243,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	if(args.View == srv.currentView && args.Index == len(srv.log)){
 		srv.log = append(srv.log, args.Entry)
 		//srv.commitIndex = srv.commitIndex+1
+		srv.commitIndex = args.PrimaryCommit
 		reply.Success = true
 
 	}else{
