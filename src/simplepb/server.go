@@ -186,7 +186,7 @@ func (srv *PBServer) Start(command interface{}) (
 			//send_pre := 
 			srv.sendPrepare(server, &args ,&reply)
 			if(reply.Success){
-				//fmt.Printf("docommit: %d, peers: %d\n", docommit, len(srv.peers))
+				fmt.Printf("docommit: %d, peers: %d\n", docommit, len(srv.peers))
 				docommit<-true
 			}
 			/*
