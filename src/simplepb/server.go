@@ -186,7 +186,7 @@ func (srv *PBServer) Start(command interface{}) (
 			//send_pre := 
 			srv.sendPrepare(server, &args ,&reply)
 			if(reply.Success){
-				fmt.Printf("docommit: %d\n", docommit)
+				fmt.Printf("docommit: %d, peers: %d\n", docommit, len(srv.peers))
 				docommit = docommit+1
 				if(docommit == len(srv.peers)/2 +1){
 					srv.commitIndex = srv.commitIndex+1
