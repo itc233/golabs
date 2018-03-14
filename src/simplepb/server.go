@@ -175,7 +175,7 @@ func (srv *PBServer) Start(command interface{}) (
 	log_len := len(srv.log)
 	// Your code here
 	for i := 0; i < len(srv.peers); i++ {
-		go func(view int, primary_idx int, log_len int, entry interface{}) {
+		go func(server int, view int, primary_idx int, log_len int, entry interface{}) {
 			var reply PrepareReply
 			args := PrepareArgs{
 				View: view,
@@ -183,7 +183,7 @@ func (srv *PBServer) Start(command interface{}) (
 				Index: log_len-1,
 				Entry: entry,
 			}
-			send_pre := srv.peers[server].Call("PBServer.sendPrepare", i, &args ,&reply)
+			send_pre := srv.peers[server].Call("PBServer.sendPrepare", server, &args ,&reply)
 			/*
 			View          int         // the primary's current view
 			PrimaryCommit int         // the primary's commitIndex
@@ -192,7 +192,7 @@ func (srv *PBServer) Start(command interface{}) (
 			*/
 			//server int, args *PrepareArgs, reply *PrepareReply
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
-		}(view, index, log_len, srv.log[log_len-1])
+		}(i, view, index, log_len, srv.log[log_len-1])
 	}
 	return index, view, ok
 }
@@ -228,17 +228,17 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	*/
 	reply.View = srv.currentView
 	if(args.View == srv.currentView && args.Index == len(srv.log)){
-		srv.log = append(srv.log, arg.Entry)
+		srv.log = append(srv.log, args.Entry)
 		reply.Success = true
 
 	}else{
 		reply.Success = false
-		if(srv.View < srv.currentView || len(srv.log) < args.Index){
+		if(srv.currentView < args.View || len(srv.log) < args.Index){
 			rec_arg := RecoveryArgs{
 				View: args.View, // the view that the backup would like to synchronize with
 				Server: srv.me, // the server sending the Recovery RPC (for debugging)
 			}
-			rec_reply := RecoveryReply
+			var rec_reply RecoveryReply
 			ok := srv.Call("PBServer.Recovery", &rec_arg, &rec_reply)
 		}
 	}
@@ -251,11 +251,11 @@ func (srv *PBServer) Recovery(args *RecoveryArgs, reply *RecoveryReply) {
 	defer srv.mu.Unlock()
 
 	srv.currentView = args.View
-	prim_id = GetPrimary(srv.currentView, len(srv.peers))
-	src.log = peers[prim_id].log
-	reply.View = peers[prim_id].currentView
-	reply.Entries = peers[prim_id].log
-	reply.PrimaryCommit = peers[prim_id].commitIndex
+	prim_id := GetPrimary(srv.currentView, len(srv.peers))
+	src.log = src.peers[prim_id].log
+	reply.View = src.peers[prim_id].currentView
+	reply.Entries = src.peers[prim_id].log
+	reply.PrimaryCommit = src.peers[prim_id].commitIndex
 	reply.Success = true
 	/*
 	View          int           // the view of the primary
