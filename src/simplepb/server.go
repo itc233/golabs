@@ -184,7 +184,7 @@ func (srv *PBServer) Start(command interface{}) (
 				Entry: entry,
 			}
 			//send_pre := 
-			srv.SendPrepare(server, &args ,&reply)
+			srv.sendPrepare(server, &args ,&reply)
 			/*
 			View          int         // the primary's current view
 			PrimaryCommit int         // the primary's commitIndex
