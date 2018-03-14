@@ -183,7 +183,7 @@ func (srv *PBServer) Start(command interface{}) (
 				Index: log_len-1,
 				Entry: entry,
 			}
-			send_pre := srv.peers[server].Call("PBServer.sendPrepare", server, &args ,&reply)
+			send_pre := srv.peers[server].Call("PBServer.sendPrepare", &args ,&reply)
 			/*
 			View          int         // the primary's current view
 			PrimaryCommit int         // the primary's commitIndex
