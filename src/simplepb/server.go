@@ -186,7 +186,7 @@ func (srv *PBServer) Start(command interface{}) (
 			//send_pre := 
 			srv.sendPrepare(server, &args ,&reply)
 			if(reply.Success){
-				//fmt.Printf("docommit: %d, peers: %d\n", docommit, len(srv.peers))
+				fmt.Printf("docommit: %d, peers: %d\n", docommit, len(srv.peers))
 				docommit = docommit+1
 				if(docommit == len(srv.peers)/2 +1){
 					srv.commitIndex = srv.commitIndex+1
@@ -201,7 +201,7 @@ func (srv *PBServer) Start(command interface{}) (
 			//server int, args *PrepareArgs, reply *PrepareReply
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
 		}(i, view, index, log_len, srv.log[log_len-1])
-		fmt.Printf("Index: %d\n", index+1)
+		//fmt.Printf("Index: %d\n", index+1)
 	}
 	return index+1, view, ok
 }
@@ -238,6 +238,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	reply.View = srv.currentView
 	if(args.View == srv.currentView && args.Index == len(srv.log)){
 		srv.log = append(srv.log, args.Entry)
+		srv.commitIndex = srv.commitIndex+1
 		reply.Success = true
 
 	}else{
