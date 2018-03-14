@@ -239,7 +239,15 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 				Server: srv.me, // the server sending the Recovery RPC (for debugging)
 			}
 			var rec_reply RecoveryReply
-			ok := srv.peers[srv.me].Call("PBServer.Recovery", &rec_arg, &rec_reply)
+			prim_id := GetPrimary(args.View, len(srv.peers))
+			ok := srv.peers[prim_id].Call("PBServer.Recovery", &rec_arg, &rec_reply)
+			if(rec_reply.Success){
+				srv.log = rec_reply.Entries
+				srv.currentView = rec_reply.View
+				srv.commitIndex = rec_reply.PrimaryCommit
+				srv.log = append(srv.log, args.Entry)
+				reply.Success = true
+			}
 		}
 	}
 }
@@ -249,13 +257,9 @@ func (srv *PBServer) Recovery(args *RecoveryArgs, reply *RecoveryReply) {
 	// Your code here
 	srv.mu.Lock()
 	defer srv.mu.Unlock()
-
-	srv.currentView = args.View
-	prim_id := GetPrimary(srv.currentView, len(srv.peers))
-	src.log = srv.peers[prim_id].log
-	reply.View = srv.peers[prim_id].currentView
-	reply.Entries = srv.peers[prim_id].log
-	reply.PrimaryCommit = srv.peers[prim_id].commitIndex
+	reply.View = srv.currentView
+	reply.Entries = srv.log
+	reply.PrimaryCommit = srv.commitIndex
 	reply.Success = true
 	/*
 	View          int           // the view of the primary
