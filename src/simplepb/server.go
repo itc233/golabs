@@ -192,8 +192,7 @@ func (srv *PBServer) Start(command interface{}) (
 			}
 			if(ok_count == len(srv.peers)/2 +1){
 				docommit<-true
-			}
-			else if(server == len(srv.peers)-1){
+			}else if(server == len(srv.peers)-1){
 				docommit<-false
 			}
 			/*
@@ -213,7 +212,7 @@ func (srv *PBServer) Start(command interface{}) (
 			//	srv.
 			//}
 		}
-	}
+	}()
 	return index, view, ok
 }
 
