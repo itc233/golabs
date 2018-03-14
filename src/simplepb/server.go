@@ -168,7 +168,7 @@ func (srv *PBServer) Start(command interface{}) (
 		return -1, srv.currentView, false
 	}
 	srv.log = append(srv.log, command)
-	index = srv.commitIndex
+	index = len(srv.peers)
 	view = srv.currentView
 	ok = true
 	// Your code here
@@ -203,8 +203,8 @@ func (srv *PBServer) Start(command interface{}) (
 		}
 		//fmt.Printf("Index: %d\n", index+1)
 	}(srv, command)
-	srv.commitIndex = srv.commitIndex+1
-	return index+1, view, ok
+	//srv.commitIndex = srv.commitIndex+1
+	return index, view, ok
 }
 
 // exmple code to send an AppendEntries RPC to a server.
