@@ -169,20 +169,21 @@ func (srv *PBServer) Start(command interface{}) (
 	}
 	srv.log = append(srv.log, command)
 	srv.commitIndex = srv.commitIndex+1
-	index := srv.commitIndex
-	view := srv.currentView
-	ok := true
+	index = srv.commitIndex
+	view = srv.currentView
+	ok = true
 	log_len := len(srv.log)
 	// Your code here
 	for i := 0; i < len(srv.peers); i++ {
 		go func(view int, primary_idx int, log_len int, entry interface{}) {
 			var reply PrepareReply
 			args := PrepareArgs{
-				View: view
-				PrimaryCommit: primary_idx
-				Index: log_len-1
-				Entry: entry
+				View: view,
+				PrimaryCommit: primary_idx,
+				Index: log_len-1,
+				Entry: entry,
 			}
+			send_pre := srv.peers[server].Call("PBServer.sendPrepare", i, &args ,&reply)
 			/*
 			View          int         // the primary's current view
 			PrimaryCommit int         // the primary's commitIndex
@@ -190,7 +191,6 @@ func (srv *PBServer) Start(command interface{}) (
 			Entry         interface{} // the log entry to be replicated
 			*/
 			//server int, args *PrepareArgs, reply *PrepareReply
-			send_pre := srv.peers[server].Call("PBServer.sendPrepare", i, &args ,&reply)
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
 		}(view, index, log_len, srv.log[log_len-1])
 	}
@@ -220,6 +220,8 @@ func (srv *PBServer) sendPrepare(server int, args *PrepareArgs, reply *PrepareRe
 // Prepare is the RPC handler for the Prepare RPC
 func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	// Your code here
+	srv.mu.Lock()
+	defer srv.mu.Unlock()
 	/*
 	View    int  // the backup's current view
 	Success bool // whether the Prepare request has been accepted or rejected
@@ -233,8 +235,8 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 		reply.Success = false
 		if(srv.View < srv.currentView || len(srv.log) < args.Index){
 			rec_arg := RecoveryArgs{
-				View: args.View // the view that the backup would like to synchronize with
-				Server: srv.me // the server sending the Recovery RPC (for debugging)
+				View: args.View, // the view that the backup would like to synchronize with
+				Server: srv.me, // the server sending the Recovery RPC (for debugging)
 			}
 			rec_reply := RecoveryReply
 			ok := srv.Call("PBServer.Recovery", &rec_arg, &rec_reply)
@@ -245,6 +247,9 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 // Recovery is the RPC handler for the Recovery RPC
 func (srv *PBServer) Recovery(args *RecoveryArgs, reply *RecoveryReply) {
 	// Your code here
+	srv.mu.Lock()
+	defer srv.mu.Unlock()
+
 	srv.currentView = args.View
 	prim_id = GetPrimary(srv.currentView, len(srv.peers)
 	src.log = peers[prim_id].log
