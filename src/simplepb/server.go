@@ -251,7 +251,7 @@ func (srv *PBServer) Recovery(args *RecoveryArgs, reply *RecoveryReply) {
 	defer srv.mu.Unlock()
 
 	srv.currentView = args.View
-	prim_id = GetPrimary(srv.currentView, len(srv.peers)
+	prim_id = GetPrimary(srv.currentView, len(srv.peers))
 	src.log = peers[prim_id].log
 	reply.View = peers[prim_id].currentView
 	reply.Entries = peers[prim_id].log
