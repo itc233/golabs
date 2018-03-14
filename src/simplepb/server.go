@@ -171,11 +171,11 @@ func (srv *PBServer) Start(command interface{}) (
 	index = srv.commitIndex
 	view = srv.currentView
 	ok = true
-	docommit := 0
 	// Your code here
 	fmt.Printf("commitIndex: %d\n", srv.commitIndex)
-	for i := 0; i < len(srv.peers); i++ {
-		go func(prm_sv *PBServer, command interface{}, server int, count *int) {
+	go func(prm_sv *PBServer, command interface{}) {
+		count := 0
+		for i := 0; i < len(prm_sv.peers); i++ {
 			var reply PrepareReply
 			args := PrepareArgs{
 				View: prm_sv.currentView,
@@ -184,11 +184,11 @@ func (srv *PBServer) Start(command interface{}) (
 				Entry: command,
 			}
 			//send_pre := 
-			prm_sv.sendPrepare(server, &args ,&reply)
+			prm_sv.sendPrepare(i, &args ,&reply)
 			if(reply.Success){
-				fmt.Printf("docommit: %d, peers: %d\n", *count, len(prm_sv.peers))
-				*count = *count + 1
-				if(*count == len(prm_sv.peers)/2 +1){
+				fmt.Printf("docommit: %d, peers: %d\n", count, len(prm_sv.peers))
+				count = count + 1
+				if(count == len(prm_sv.peers)/2 +1){
 					prm_sv.commitIndex = prm_sv.commitIndex+1
 				}
 			}
@@ -200,9 +200,9 @@ func (srv *PBServer) Start(command interface{}) (
 			*/
 			//server int, args *PrepareArgs, reply *PrepareReply
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
-		}(srv, command, i, &docommit)
+		}
 		//fmt.Printf("Index: %d\n", index+1)
-	}
+	}(srv, command)
 	return index+1, view, ok
 }
 
