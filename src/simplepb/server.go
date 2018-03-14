@@ -172,7 +172,7 @@ func (srv *PBServer) Start(command interface{}) (
 	view = srv.currentView
 	ok = true
 	log_len := len(srv.log)
-	docommit := 0
+	docommit := make(chan bool, len(srv.peers))
 	// Your code here
 	for i := 0; i < len(srv.peers); i++ {
 		go func(server int, view int, primary_idx int, log_len int, entry interface{}) {
@@ -186,11 +186,8 @@ func (srv *PBServer) Start(command interface{}) (
 			//send_pre := 
 			srv.sendPrepare(server, &args ,&reply)
 			if(reply.Success){
-				fmt.Printf("docommit: %d, peers: %d\n", docommit, len(srv.peers))
-				docommit = docommit+1
-				if(docommit == len(srv.peers)/2 +1){
-					srv.commitIndex = srv.commitIndex+1
-				}
+				//fmt.Printf("docommit: %d, peers: %d\n", docommit, len(srv.peers))
+				docommit<-true
 			}
 			/*
 			View          int         // the primary's current view
@@ -203,6 +200,11 @@ func (srv *PBServer) Start(command interface{}) (
 		}(i, view, index, log_len, srv.log[log_len-1])
 		//fmt.Printf("Index: %d\n", index+1)
 	}
+	go func(){
+		if(len(docommit) == len(srv.peers)/2 +1){
+			srv.commitIndex = srv.commitIndex+1
+		}
+		}()
 	return index+1, view, ok
 }
 
