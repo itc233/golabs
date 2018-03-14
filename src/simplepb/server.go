@@ -8,7 +8,7 @@ package simplepb
 
 import (
 	"sync"
-
+	"fmt"
 	"labrpc"
 )
 
