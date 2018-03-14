@@ -171,7 +171,6 @@ func (srv *PBServer) Start(command interface{}) (
 	index = srv.commitIndex
 	view = srv.currentView
 	ok = true
-	log_len := len(srv.log)
 	docommit := 0
 	// Your code here
 	fmt.Printf("commitIndex: %d\n", srv.commitIndex)
