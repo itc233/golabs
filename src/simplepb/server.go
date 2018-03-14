@@ -8,7 +8,7 @@ package simplepb
 
 import (
 	"sync"
-
+	"fmt"
 	"labrpc"
 )
 
@@ -186,6 +186,7 @@ func (srv *PBServer) Start(command interface{}) (
 			//send_pre := 
 			srv.sendPrepare(server, &args ,&reply)
 			if(reply.Success){
+				fmt.Printf(docommit)
 				docommit = docommit+1
 				if(docommit == len(srv.peers)/2 +1){
 					srv.commitIndex = srv.commitIndex+1
@@ -241,21 +242,22 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	}else{
 		reply.Success = false
 		if(srv.currentView < args.View || len(srv.log) < args.Index){
-			rec_arg := RecoveryArgs{
-				View: args.View, // the view that the backup would like to synchronize with
-				Server: srv.me, // the server sending the Recovery RPC (for debugging)
-			}
-			var rec_reply RecoveryReply
-			prim_id := GetPrimary(args.View, len(srv.peers))
-			//ok := 
-			srv.peers[prim_id].Call("PBServer.Recovery", &rec_arg, &rec_reply)
-			if(rec_reply.Success){
-				srv.log = rec_reply.Entries
-				srv.currentView = rec_reply.View
-				srv.commitIndex = rec_reply.PrimaryCommit
-				srv.log = append(srv.log, args.Entry)
-				reply.Success = true
-			}
+			go func(){
+				rec_arg := RecoveryArgs{
+					View: args.View, // the view that the backup would like to synchronize with
+					Server: srv.me, // the server sending the Recovery RPC (for debugging)
+				}
+				var rec_reply RecoveryReply
+				prim_id := GetPrimary(args.View, len(srv.peers))
+				srv.peers[prim_id].Call("PBServer.Recovery", &rec_arg, &rec_reply)
+				if(rec_reply.Success){
+					srv.log = rec_reply.Entries
+					srv.currentView = rec_reply.View
+					srv.commitIndex = rec_reply.PrimaryCommit
+					srv.log = append(srv.log, args.Entry)
+					reply.Success = true
+				}
+			}()
 		}
 	}
 }
