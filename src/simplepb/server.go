@@ -200,7 +200,7 @@ func (srv *PBServer) Start(command interface{}) (
 			*/
 			//server int, args *PrepareArgs, reply *PrepareReply
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
-		}(srv, command, i, docommit)
+		}(srv, command, i, &docommit)
 		//fmt.Printf("Index: %d\n", index+1)
 	}
 	return index+1, view, ok
