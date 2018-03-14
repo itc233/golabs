@@ -175,7 +175,7 @@ func (srv *PBServer) Start(command interface{}) (
 	// Your code here
 	fmt.Printf("commitIndex: %d\n", srv.commitIndex)
 	for i := 0; i < len(srv.peers); i++ {
-		go func(prm_sv *PBServer, command interface{}, server int, count *int) {
+		go func(prm_sv *PBServer, command interface{}, server int, count &int) {
 			var reply PrepareReply
 			args := PrepareArgs{
 				View: prm_sv.currentView,
