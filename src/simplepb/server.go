@@ -172,7 +172,7 @@ func (srv *PBServer) Start(command interface{}) (
 	view = srv.currentView
 	ok = true
 	log_len := len(srv.log)
-	docommit := make(chan bool, len(srv.peers))
+	docommit := 0
 	// Your code here
 	for i := 0; i < len(srv.peers); i++ {
 		go func(server int, view int, primary_idx int, log_len int, entry interface{}) {
@@ -201,6 +201,7 @@ func (srv *PBServer) Start(command interface{}) (
 			//server int, args *PrepareArgs, reply *PrepareReply
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
 		}(i, view, index, log_len, srv.log[log_len-1])
+		fmt.Printf("Index: %d\n", index+1)
 	}
 	return index+1, view, ok
 }
