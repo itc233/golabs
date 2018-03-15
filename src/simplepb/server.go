@@ -266,15 +266,15 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	Success bool // whether the Prepare request has been accepted or rejected
 	*/
 	reply.View = srv.currentView
+	fmt.Printf("Fail server: %d Primary view: %d Primary index: %d srv.view: %d srv.log: %d\n", 
+			srv.me, args.View, args.Index, srv.currentView, len(srv.log))
 	if(args.View == srv.currentView && args.Index == len(srv.log)){
 		srv.log = append(srv.log, args.Entry)
 		//srv.commitIndex = srv.commitIndex+1
 		srv.commitIndex = args.PrimaryCommit
 		reply.Success = true
 
-	}else{
-		fmt.Printf("Fail server: %d Primary view: %d Primary index: %d srv.view: %d srv.log: %d\n", 
-			srv.me, args.View, args.Index, srv.currentView, len(srv.log))
+	}else if(srv.me != GetPrimary(args.View, len(srv.peers)){
 		reply.Success = false
 		if(srv.currentView < args.View || len(srv.log) < args.Index){
 			rec_arg := RecoveryArgs{
