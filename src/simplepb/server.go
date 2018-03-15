@@ -81,11 +81,11 @@ type StartViewArgs struct {
 type StartViewReply struct {
 }
 
-type CommitArg{
+type CommitArg struct {
 	PrimaryCommit int
 }
 
-type CommitReply{
+type CommitReply struct {
 
 }
 
@@ -215,8 +215,9 @@ func (srv *PBServer) Start(command interface{}) (
 		}
 		if(count >= len(prm_sv.peers)/2 +1){
 			nowcommit := prm_sv.commitIndex+1
+			prm_sv.commitIndex = nowcommit
 			args := CommitArg{
-				PrimaryCommit: nowcommit
+				PrimaryCommit: nowcommit,
 			}
 			for i := 0; i < len(prm_sv.peers); i++ {
 				var reply CommitReply
