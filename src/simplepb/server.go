@@ -81,6 +81,14 @@ type StartViewArgs struct {
 type StartViewReply struct {
 }
 
+type CommitArg{
+	PrimaryCommit int
+}
+
+type CommitReply{
+
+}
+
 // GetPrimary is an auxilary function that returns the server index of the
 // primary server given the view number (and the total number of replica servers)
 func GetPrimary(view int, nservers int) int {
@@ -205,10 +213,26 @@ func (srv *PBServer) Start(command interface{}) (
 			//server int, args *PrepareArgs, reply *PrepareReply
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
 		}
+		if(count >= len(prm_sv.peers)/2 +1){
+			nowcommit := prm_sv.commitIndex+1
+			args := CommitArg{
+				PrimaryCommit: nowcommit
+			}
+			for i := 0; i < len(prm_sv.peers); i++ {
+				var reply CommitReply
+				prm_sv.peers[i].Call("PBServer.CommitIdx", args, reply)
+			}
+		}
 		//fmt.Printf("Index: %d\n", index+1)
 	}(srv, command)
-	srv.commitIndex = srv.commitIndex+1
+	//srv.commitIndex = srv.commitIndex+1
 	return index+1, view, ok
+}
+
+func (srv *PBServer) CommitIdx(args *CommitArg, reply *CommitReply) {
+	srv.mu.Lock()
+	defer srv.mu.Unlock()
+	srv.commitIndex = args.PrimaryCommit
 }
 
 // exmple code to send an AppendEntries RPC to a server.
