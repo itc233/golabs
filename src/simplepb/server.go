@@ -274,7 +274,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 		srv.commitIndex = args.PrimaryCommit
 		reply.Success = true
 
-	}else if(srv.me != GetPrimary(args.View, len(srv.peers)){
+	}else if( srv.me != GetPrimary(args.View, len(srv.peers)) ){
 		reply.Success = false
 		if(srv.currentView < args.View || len(srv.log) < args.Index){
 			rec_arg := RecoveryArgs{
