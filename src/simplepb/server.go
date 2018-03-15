@@ -204,7 +204,7 @@ func (srv *PBServer) Start(command interface{}) (
 				count = count + 1
 				if(count == len(prm_sv.peers)/2 +1){
 					prm_sv.commitIndex = prm_sv.commitIndex +1
-					break
+					//break
 				}
 			}
 		}
