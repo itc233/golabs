@@ -281,8 +281,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 				//srv.log = append(srv.log, args.Entry)
 				reply.Success = true
 			}
-	}
-	else{
+	}else{
 		reply.Success = false
 	}
 }
