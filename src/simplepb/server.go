@@ -168,6 +168,7 @@ func (srv *PBServer) Start(command interface{}) (
 		return -1, srv.currentView, false
 	}
 	srv.log = append(srv.log, command)
+	//index = len(srv.log)
 	index = srv.commitIndex
 	view = srv.currentView
 	ok = true
@@ -240,7 +241,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	Success bool // whether the Prepare request has been accepted or rejected
 	*/
 	reply.View = srv.currentView
-	if(args.View == srv.currentView && args.Index <= len(srv.log)){
+	if(args.View == srv.currentView && args.Index == len(srv.log)){
 		srv.log = append(srv.log, args.Entry)
 		//srv.commitIndex = srv.commitIndex+1
 		srv.commitIndex = args.PrimaryCommit
@@ -248,7 +249,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 
 	}else{
 		reply.Success = false
-		if(srv.currentView < args.View || len(srv.log) < args.Index){
+		if(srv.currentView < args.View || len(srv.log) != args.Index){
 			rec_arg := RecoveryArgs{
 				View: args.View, // the view that the backup would like to synchronize with
 				Server: srv.me, // the server sending the Recovery RPC (for debugging)
