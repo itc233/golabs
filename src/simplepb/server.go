@@ -149,7 +149,7 @@ func Make(peers []*labrpc.ClientEnd, me int, startingView int) *PBServer {
 	var v interface{}
 	srv.log = append(srv.log, v)
 	// Your other initialization code here, if there's any
-	srv.doNext = make(chan bool)
+	srv.doNext = make(chan bool, 1)
 	srv.doNext<-true
 	return srv
 }
@@ -207,7 +207,7 @@ func (srv *PBServer) Start(command interface{}) (
 				}
 			}
 		}
-		srv.doNext<-true
+		prm_sv.doNext<-true
 	}(srv, command, log_len)
 	//srv.commitIndex = srv.commitIndex+1
 	return index+1, view, ok
