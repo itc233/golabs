@@ -194,7 +194,7 @@ func (srv *PBServer) Start(command interface{}) (
 				Entry: command,
 			}
 			prm_sv.sendPrepare(i, &args ,&reply)
-			fmt.Printf("count: %d, peer id: %d, result: %b\n", count, i, reply.Success)
+			//fmt.Printf("count: %d, peer id: %d, result: %b\n", count, i, reply.Success)
 			if(reply.Success){
 				//fmt.Printf("docommit: %d, peers: %d\n", count, i)
 				count = count + 1
@@ -256,7 +256,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 
 	}else{
 		reply.Success = false
-		if(srv.currentView < args.View || len(srv.log) < args.Index){
+		//if(srv.currentView < args.View || len(srv.log) < args.Index){
 			rec_arg := RecoveryArgs{
 				View: args.View, // the view that the backup would like to synchronize with
 				Server: srv.me, // the server sending the Recovery RPC (for debugging)
@@ -271,7 +271,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 				//srv.log = append(srv.log, args.Entry)
 				reply.Success = true
 			}
-		}
+		//}
 	}
 }
 
