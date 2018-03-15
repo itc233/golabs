@@ -194,6 +194,7 @@ func (srv *PBServer) Start(command interface{}) (
 				Entry: command,
 			}
 			prm_sv.sendPrepare(i, &args ,&reply)
+			fmt.Printf("count: %d, peer id: %d, result: %b\n", count, i, reply.Success)
 			if(reply.Success){
 				//fmt.Printf("docommit: %d, peers: %d\n", count, i)
 				count = count + 1
