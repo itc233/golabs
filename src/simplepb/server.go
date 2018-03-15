@@ -31,7 +31,7 @@ type PBServer struct {
 	log         []interface{} // the log of "commands"
 	commitIndex int           // all log entries <= commitIndex are considered to have been committed.
 
-	doNext			chan int
+	doNext			chan bool
 	// ... other state that you might need ...
 }
 
@@ -149,8 +149,8 @@ func Make(peers []*labrpc.ClientEnd, me int, startingView int) *PBServer {
 	var v interface{}
 	srv.log = append(srv.log, v)
 	// Your other initialization code here, if there's any
-	srv.doNext = make(chan int)
-	srv.doNext<-0
+	srv.doNext = make(chan bool)
+	srv.doNext<-true
 	return srv
 }
 
@@ -207,7 +207,7 @@ func (srv *PBServer) Start(command interface{}) (
 				}
 			}
 		}
-		srv.doNext<-prm_sv.me
+		srv.doNext<-true
 	}(srv, command, log_len)
 	//srv.commitIndex = srv.commitIndex+1
 	return index+1, view, ok
