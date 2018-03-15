@@ -256,8 +256,10 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 
 	}else{
 		reply.Success = false
-		fmt.Printf("srv.currentViewv:%d args.View:%d len(srv.log):%d args.Index:%d", srv.currentView, args.View, len(srv.log), args.Index)
-		//if(srv.currentView < args.View || len(srv.log) < args.Index){
+		fmt.Printf("srv.currentViewv:%d args.View:%d len(srv.log):%d args.Index:%d\n", srv.currentView, args.View, len(srv.log), args.Index)
+		if(srv.currentView < args.View || len(srv.log) < args.Index){
+			fmt.Printf("Recovery\n")
+		}
 			rec_arg := RecoveryArgs{
 				View: args.View, // the view that the backup would like to synchronize with
 				Server: srv.me, // the server sending the Recovery RPC (for debugging)
