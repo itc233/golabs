@@ -31,6 +31,7 @@ type PBServer struct {
 	log         []interface{} // the log of "commands"
 	commitIndex int           // all log entries <= commitIndex are considered to have been committed.
 
+	doNext			chan bool
 	// ... other state that you might need ...
 }
 
@@ -147,7 +148,8 @@ func Make(peers []*labrpc.ClientEnd, me int, startingView int) *PBServer {
 	// all servers' log are initialized with a dummy command at index 0
 	var v interface{}
 	srv.log = append(srv.log, v)
-
+	srv.doNext := make(chan bool, 1)
+	srv.doNext<-true
 	// Your other initialization code here, if there's any
 	return srv
 }
@@ -175,6 +177,7 @@ func (srv *PBServer) Start(command interface{}) (
 	} else if GetPrimary(srv.currentView, len(srv.peers)) != srv.me {
 		return -1, srv.currentView, false
 	}
+	<-srv.doNext
 	srv.log = append(srv.log, command)
 	//index = srv.commitIndex
 	index = len(srv.log)-2
@@ -193,7 +196,6 @@ func (srv *PBServer) Start(command interface{}) (
 				Index: len(prm_sv.log)-1,
 				Entry: command,
 			}
-			//send_pre := 
 			prm_sv.sendPrepare(i, &args ,&reply)
 			if(reply.Success){
 				//fmt.Printf("docommit: %d, peers: %d\n", count, i)
@@ -201,31 +203,9 @@ func (srv *PBServer) Start(command interface{}) (
 				/*if(count == len(prm_sv.peers)/2 +1){
 					prm_sv.commitIndex = len(prm_sv.log)
 				}*/
-			}/*else{
-				fmt.Printf("Fail: %d\n", i)
-			}*/
-			/*
-			View          int         // the primary's current view
-			PrimaryCommit int         // the primary's commitIndex
-			Index         int         // the index position at which the log entry is to be replicated on backups
-			Entry         interface{} // the log entry to be replicated
-			*/
-			//server int, args *PrepareArgs, reply *PrepareReply
-			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
+			}
 		}
-		
-		/*if(count >= len(prm_sv.peers)/2 +1){
-			nowcommit := prm_sv.commitIndex+1
-			prm_sv.commitIndex = nowcommit
-			args := CommitArg{
-				PrimaryCommit: nowcommit,
-			}
-			for i := 0; i < len(prm_sv.peers); i++ {
-				var reply CommitReply
-				prm_sv.peers[i].Call("PBServer.CommitIdx", args, reply)
-			}
-		}*/
-		//fmt.Printf("Index: %d\n", index+1)
+		prm_sv.doNext<-true
 	}(srv, command)
 	srv.commitIndex = srv.commitIndex+1
 	return index+1, view, ok
