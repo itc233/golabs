@@ -31,7 +31,7 @@ type PBServer struct {
 	log         []interface{} // the log of "commands"
 	commitIndex int           // all log entries <= commitIndex are considered to have been committed.
 
-	doNext			chan bool
+	doNext			chan int
 	// ... other state that you might need ...
 }
 
