@@ -177,7 +177,7 @@ func (srv *PBServer) Start(command interface{}) (
 	} else if GetPrimary(srv.currentView, len(srv.peers)) != srv.me {
 		return -1, srv.currentView, false
 	}
-	<-srv.doNext
+	//<-srv.doNext
 	srv.log = append(srv.log, command)
 	index = srv.commitIndex
 	//index = len(srv.log)-2
@@ -205,9 +205,11 @@ func (srv *PBServer) Start(command interface{}) (
 				if(count == len(prm_sv.peers)/2 +1){
 					prm_sv.commitIndex = prm_sv.commitIndex +1
 				}
+			}else{
+				i = i-1
 			}
 		}
-		prm_sv.doNext<-true
+		//prm_sv.doNext<-true
 	}(srv, command, log_len)
 	//srv.commitIndex = srv.commitIndex+1
 	return index+1, view, ok
@@ -259,12 +261,12 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 		srv.commitIndex = args.PrimaryCommit
 		reply.Success = true
 
-	}else{
+	}else if(srv.currentView < args.View || len(srv.log) < args.Index){
 		reply.Success = false
-		fmt.Printf("srv.currentViewv:%d args.View:%d len(srv.log):%d args.Index:%d\n", srv.currentView, args.View, len(srv.log), args.Index)
-		if(srv.currentView < args.View || len(srv.log) < args.Index){
+		//fmt.Printf("srv.currentViewv:%d args.View:%d len(srv.log):%d args.Index:%d\n", srv.currentView, args.View, len(srv.log), args.Index)
+		/*if(srv.currentView < args.View || len(srv.log) < args.Index){
 			fmt.Printf("Recovery\n")
-		}
+		}*/
 			rec_arg := RecoveryArgs{
 				View: args.View, // the view that the backup would like to synchronize with
 				Server: srv.me, // the server sending the Recovery RPC (for debugging)
@@ -280,6 +282,8 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 				reply.Success = true
 			}
 		//}
+	}else{
+		reply.Success = false
 	}
 }
 
