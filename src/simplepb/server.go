@@ -196,14 +196,14 @@ func (srv *PBServer) Start(command interface{}) (
 			//send_pre := 
 			prm_sv.sendPrepare(i, &args ,&reply)
 			if(reply.Success){
-				fmt.Printf("docommit: %d, peers: %d\n", count, i)
+				//fmt.Printf("docommit: %d, peers: %d\n", count, i)
 				count = count + 1
 				/*if(count == len(prm_sv.peers)/2 +1){
 					prm_sv.commitIndex = len(prm_sv.log)
 				}*/
-			}else{
+			}/*else{
 				fmt.Printf("Fail: %d\n", i)
-			}
+			}*/
 			/*
 			View          int         // the primary's current view
 			PrimaryCommit int         // the primary's commitIndex
@@ -213,6 +213,7 @@ func (srv *PBServer) Start(command interface{}) (
 			//server int, args *PrepareArgs, reply *PrepareReply
 			// fmt.Printf("node-%d (nReplies %d) received reply ok=%v reply=%v\n", srv.me, nReplies, ok, r.reply)
 		}
+		
 		/*if(count >= len(prm_sv.peers)/2 +1){
 			nowcommit := prm_sv.commitIndex+1
 			prm_sv.commitIndex = nowcommit
@@ -266,8 +267,8 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	Success bool // whether the Prepare request has been accepted or rejected
 	*/
 	reply.View = srv.currentView
-	fmt.Printf("Fail server: %d Primary view: %d Primary index: %d srv.view: %d srv.log: %d\n", 
-			srv.me, args.View, args.Index, srv.currentView, len(srv.log))
+	/*fmt.Printf("Fail server: %d Primary view: %d Primary index: %d srv.view: %d srv.log: %d\n", 
+			srv.me, args.View, args.Index, srv.currentView, len(srv.log))*/
 	if(args.View == srv.currentView && args.Index == len(srv.log)){
 		srv.log = append(srv.log, args.Entry)
 		//srv.commitIndex = srv.commitIndex+1
