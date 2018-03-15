@@ -177,7 +177,7 @@ func (srv *PBServer) Start(command interface{}) (
 	} else if GetPrimary(srv.currentView, len(srv.peers)) != srv.me {
 		return -1, srv.currentView, false
 	}
-	<-srv.doNext
+	//<-srv.doNext
 	srv.log = append(srv.log, command)
 	index = srv.commitIndex
 	//index = len(srv.log)-2
