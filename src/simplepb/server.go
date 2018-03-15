@@ -192,8 +192,8 @@ func (srv *PBServer) Start(command interface{}) (
 		for i := 0; i < len(srv.peers); i++ {
 			var reply PrepareReply
 			args := PrepareArgs{
-				View: prm_sv.currentView,
-				PrimaryCommit: prm_sv.commitIndex,
+				View: srv.currentView,
+				PrimaryCommit: srv.commitIndex,
 				Index: log_len-1,
 				Entry: command,
 			}
@@ -202,7 +202,7 @@ func (srv *PBServer) Start(command interface{}) (
 			if(reply.Success){
 				//fmt.Printf("docommit: %d, peers: %d\n", count, i)
 				count = count + 1
-				if(count == len(prm_sv.peers)/2 +1){
+				if(count == len(srv.peers)/2 +1){
 					srv.commitIndex = srv.commitIndex +1
 				}
 			}
