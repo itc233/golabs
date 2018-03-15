@@ -148,7 +148,7 @@ func Make(peers []*labrpc.ClientEnd, me int, startingView int) *PBServer {
 	// all servers' log are initialized with a dummy command at index 0
 	var v interface{}
 	srv.log = append(srv.log, v)
-	srv.doNext := make(chan bool, 1)
+	srv.doNext = make(chan bool, 1)
 	srv.doNext<-true
 	// Your other initialization code here, if there's any
 	return srv
