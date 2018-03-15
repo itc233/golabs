@@ -200,14 +200,14 @@ func (srv *PBServer) Start(command interface{}) (
 			if(reply.Success){
 				//fmt.Printf("docommit: %d, peers: %d\n", count, i)
 				count = count + 1
-				/*if(count == len(prm_sv.peers)/2 +1){
-					prm_sv.commitIndex = len(prm_sv.log)
-				}*/
+				if(count == len(prm_sv.peers)/2 +1){
+					prm_sv.commitIndex = prm_sv.commitIndex +1
+				}
 			}
 		}
 		prm_sv.doNext<-true
 	}(srv, command)
-	srv.commitIndex = srv.commitIndex+1
+	//srv.commitIndex = srv.commitIndex+1
 	return index+1, view, ok
 }
 
