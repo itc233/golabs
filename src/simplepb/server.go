@@ -31,7 +31,7 @@ type PBServer struct {
 	log         []interface{} // the log of "commands"
 	commitIndex int           // all log entries <= commitIndex are considered to have been committed.
 
-	doNext			chan bool
+	//doNext			chan bool
 	// ... other state that you might need ...
 }
 
@@ -148,8 +148,6 @@ func Make(peers []*labrpc.ClientEnd, me int, startingView int) *PBServer {
 	// all servers' log are initialized with a dummy command at index 0
 	var v interface{}
 	srv.log = append(srv.log, v)
-	srv.doNext = make(chan bool, 100)
-	srv.doNext<-true
 	// Your other initialization code here, if there's any
 	return srv
 }
@@ -177,7 +175,6 @@ func (srv *PBServer) Start(command interface{}) (
 	} else if GetPrimary(srv.currentView, len(srv.peers)) != srv.me {
 		return -1, srv.currentView, false
 	}
-	<-srv.doNext
 	srv.log = append(srv.log, command)
 	//index = srv.commitIndex
 	index = len(srv.log)-2
@@ -205,7 +202,6 @@ func (srv *PBServer) Start(command interface{}) (
 				}
 			}
 		}
-		prm_sv.doNext<-true
 	}(srv, command)
 	//srv.commitIndex = srv.commitIndex+1
 	return index+1, view, ok
@@ -249,13 +245,15 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	reply.View = srv.currentView
 	/*fmt.Printf("Fail server: %d Primary view: %d Primary index: %d srv.view: %d srv.log: %d\n", 
 			srv.me, args.View, args.Index, srv.currentView, len(srv.log))*/
-	if(args.View == srv.currentView && args.Index == len(srv.log)){
+	if(srv.me == GetPrimary(args.View, len(srv.peers))){
+		reply.Success = true
+	}else if(args.View == srv.currentView && args.Index == len(srv.log)){
 		srv.log = append(srv.log, args.Entry)
 		//srv.commitIndex = srv.commitIndex+1
 		srv.commitIndex = args.PrimaryCommit
 		reply.Success = true
 
-	}else if( srv.me != GetPrimary(args.View, len(srv.peers)) ){
+	}else{
 		reply.Success = false
 		if(srv.currentView < args.View || len(srv.log) < args.Index){
 			rec_arg := RecoveryArgs{
