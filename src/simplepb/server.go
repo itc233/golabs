@@ -205,6 +205,8 @@ func (srv *PBServer) Start(command interface{}) (
 				if(count == len(prm_sv.peers)/2 +1){
 					prm_sv.commitIndex = prm_sv.commitIndex +1
 				}
+			}else{
+				i = i-1
 			}
 		}
 		//prm_sv.doNext<-true
@@ -259,7 +261,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 		srv.commitIndex = args.PrimaryCommit
 		reply.Success = true
 
-	}else{
+	}else if(srv.currentView < args.View || len(srv.log) < args.Index){
 		reply.Success = false
 		fmt.Printf("srv.currentViewv:%d args.View:%d len(srv.log):%d args.Index:%d\n", srv.currentView, args.View, len(srv.log), args.Index)
 		if(srv.currentView < args.View || len(srv.log) < args.Index){
@@ -279,7 +281,9 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 				//srv.log = append(srv.log, args.Entry)
 				reply.Success = true
 			}
-		//}
+	}
+	else{
+		reply.Success = false
 	}
 }
 
