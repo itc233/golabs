@@ -32,6 +32,7 @@ type PBServer struct {
 	commitIndex int           // all log entries <= commitIndex are considered to have been committed.
 
 	doNext			chan bool
+	crtIndex		int
 	// ... other state that you might need ...
 }
 
@@ -151,6 +152,7 @@ func Make(peers []*labrpc.ClientEnd, me int, startingView int) *PBServer {
 	// Your other initialization code here, if there's any
 	srv.doNext = make(chan bool, 1)
 	srv.doNext<-true
+	crtIndex = 0
 	return srv
 }
 
@@ -190,6 +192,10 @@ func (srv *PBServer) Start(command interface{}) (
 	go func(prm_sv *PBServer, command interface{}, log_len int) {
 		count := 0
 		for i := 0; i < len(prm_sv.peers); i++ {
+			if(crtIndex < log_len-2){
+				--i
+				continue
+			}
 			var reply PrepareReply
 			args := PrepareArgs{
 				View: prm_sv.currentView,
@@ -210,6 +216,7 @@ func (srv *PBServer) Start(command interface{}) (
 				i = i-1
 			}
 		}
+		crtIndex++
 		//prm_sv.doNext<-true
 	}(srv, command, log_len)
 	//srv.commitIndex = srv.commitIndex+1
@@ -263,7 +270,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 		srv.commitIndex = args.PrimaryCommit
 		reply.Success = true
 
-	}else if(srv.currentView < args.View){
+	}else if(srv.currentView < args.View || len(srv.log) < args.Index){
 		reply.Success = false
 		//fmt.Printf("srv.currentViewv:%d args.View:%d len(srv.log):%d args.Index:%d\n", srv.currentView, args.View, len(srv.log), args.Index)
 		if(srv.currentView < args.View || len(srv.log) < args.Index){
