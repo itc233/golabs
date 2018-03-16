@@ -181,7 +181,7 @@ func (srv *PBServer) Start(command interface{}) (
 	}
 	//<-srv.doNext
 	srv.log = append(srv.log, command)
-	index = srv.commitIndex+1
+	index = len(srv.log)-1
 	//index = len(srv.log)-2
 	view = srv.currentView
 	ok = true
