@@ -193,10 +193,10 @@ func (srv *PBServer) Start(command interface{}) (
 		count := 0
 		for i := 0; i < len(prm_sv.peers); i++ {
 			//fmt.Printf("prm_sv.commitIndex: %d, len of log: %d\n", prm_sv.commitIndex, log_len)
-			if(prm_sv.crtIndex < log_len-2){
+			/*if(prm_sv.crtIndex < log_len-2){
 				i = 0
 				continue
-			}
+			}*/
 			args := PrepareArgs{
 				View: prm_sv.currentView,
 				PrimaryCommit: prm_sv.commitIndex,
@@ -209,7 +209,9 @@ func (srv *PBServer) Start(command interface{}) (
 			if(rpc_ok && reply.Success){
 				count = count + 1
 				if(count == len(prm_sv.peers)/2 +1){
-					prm_sv.commitIndex = prm_sv.commitIndex +1
+					if(prm_sv.commitIndex < Index+1){
+						prm_sv.commitIndex = Index+1
+					}
 				} 
 			}/*else if(rpc_ok && reply.Success == false){
 				i = i-1
