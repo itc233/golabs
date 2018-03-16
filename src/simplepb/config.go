@@ -247,13 +247,11 @@ func (cfg *config) replicateOne(server int, cmd int, expectedServers int) (
 	t0 := time.Now()
 	for time.Since(t0).Seconds() < 10 {
 		committed := pri.IsCommitted(index)
-		fmt.Printf("index %d\n", index)
 		if committed {
 			nReplicated := 0
 			for i := 0; i < len(cfg.pbservers); i++ {
 				ok, cmd1 := cfg.pbservers[i].GetEntryAtIndex(index)
 				if ok {
-					fmt.Printf("index %d server %d cmd %d\n", index,i, cmd1)
 					if cmd2, ok2 := cmd1.(int); ok2 && cmd2 == cmd {
 						nReplicated++
 					}
