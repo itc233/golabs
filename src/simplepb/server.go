@@ -272,7 +272,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 		srv.commitIndex = args.PrimaryCommit
 		reply.Success = true
 
-	}else{
+	}else if(srv.currentView < args.View || len(srv.log) < args.Index){
 		reply.Success = false
 		//fmt.Printf("srv.currentViewv:%d args.View:%d len(srv.log):%d args.Index:%d\n", srv.currentView, args.View, len(srv.log), args.Index)
 		if(srv.currentView < args.View || len(srv.log) < args.Index){
