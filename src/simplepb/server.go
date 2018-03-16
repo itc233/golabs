@@ -257,7 +257,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	if(srv.me == GetPrimary(args.View, len(srv.peers))){
 		reply.Success = true
 	}else if(args.View == srv.currentView && args.Index == len(srv.log)){
-		//fmt.Printf("srv.me %d arg.Index %d len(srv.log) %d\n", srv.me, args.Index)
+		fmt.Printf("srv.me %d arg.Index %d len(srv.log) %d\n", srv.me, args.Index, srv.log)
 		srv.log = append(srv.log, args.Entry)
 		//srv.commitIndex = srv.commitIndex+1
 		srv.commitIndex = args.PrimaryCommit
