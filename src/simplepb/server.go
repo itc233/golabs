@@ -190,11 +190,11 @@ func (srv *PBServer) Start(command interface{}) (
 	fmt.Printf("commitIndex: %d\n", srv.commitIndex)
 	fmt.Printf("log len: %d, primary: %d\n", len(srv.log), GetPrimary(srv.currentView, len(srv.peers)))
 	go func(prm_sv *PBServer, command interface{}, log_len int) {
+		srv.mu.Lock()
+		defer srv.mu.Unlock()
 		count := 0
 		for i := 0; i < len(prm_sv.peers); i++ {
 			//fmt.Printf("prm_sv.commitIndex: %d, len of log: %d\n", prm_sv.commitIndex, log_len)
-			srv.mu.Lock()
-			defer srv.mu.Unlock()
 			if(prm_sv.crtIndex < log_len-2){
 				i = i-1
 				continue
