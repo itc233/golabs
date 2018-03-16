@@ -179,7 +179,7 @@ func (srv *PBServer) Start(command interface{}) (
 	} else if GetPrimary(srv.currentView, len(srv.peers)) != srv.me {
 		return -1, srv.currentView, false
 	}
-	//<-srv.doNext
+	<-srv.doNext
 	srv.log = append(srv.log, command)
 	index = srv.commitIndex
 	//index = len(srv.log)-2
@@ -190,15 +190,13 @@ func (srv *PBServer) Start(command interface{}) (
 	fmt.Printf("commitIndex: %d\n", srv.commitIndex)
 	fmt.Printf("log len: %d, primary: %d\n", len(srv.log), GetPrimary(srv.currentView, len(srv.peers)))
 	go func(prm_sv *PBServer, command interface{}, log_len int) {
-		srv.mu.Lock()
-		defer srv.mu.Unlock()
 		count := 0
 		for i := 0; i < len(prm_sv.peers); i++ {
 			//fmt.Printf("prm_sv.commitIndex: %d, len of log: %d\n", prm_sv.commitIndex, log_len)
-			if(prm_sv.crtIndex < log_len-2){
-				i = i-1
-				continue
-			}
+			//if(prm_sv.crtIndex < log_len-2){
+			//	i = i-1
+			//	continue
+			//}
 			var reply PrepareReply
 			args := PrepareArgs{
 				View: prm_sv.currentView,
@@ -222,7 +220,7 @@ func (srv *PBServer) Start(command interface{}) (
 			}*/
 		}
 		prm_sv.crtIndex = prm_sv.crtIndex + 1
-		//prm_sv.doNext<-true
+		prm_sv.doNext<-true
 	}(srv, command, log_len)
 	//srv.commitIndex = srv.commitIndex+1
 	return index+1, view, ok
