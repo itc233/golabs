@@ -301,6 +301,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 			reply.Success = true
 		}
 		//}
+		fmt.Printf("Prepare srv %d commit index %d\n", srv.me, srv.commitIndex)
 	}
 	reply.View = srv.currentView
 }
