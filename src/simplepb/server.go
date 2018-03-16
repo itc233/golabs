@@ -187,8 +187,8 @@ func (srv *PBServer) Start(command interface{}) (
 	ok = true
 	log_len := len(srv.log)
 	// Your code here
-	//fmt.Printf("commitIndex: %d\n", srv.commitIndex)
-	//fmt.Printf("log len: %d, primary: %d\n", len(srv.log), GetPrimary(srv.currentView, len(srv.peers)))
+	fmt.Printf("commitIndex: %d\n", srv.commitIndex)
+	fmt.Printf("log len: %d, primary: %d\n", len(srv.log), GetPrimary(srv.currentView, len(srv.peers)))
 	go func(prm_sv *PBServer, command interface{}, log_len int) {
 		count := 0
 		for i := 0; i < len(prm_sv.peers); i++ {
@@ -289,7 +289,6 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 				srv.log = rec_reply.Entries
 				srv.currentView = rec_reply.View
 				srv.commitIndex = rec_reply.PrimaryCommit
-				//srv.log = append(srv.log, args.Entry)
 				reply.Success = true
 			}
 		//}
