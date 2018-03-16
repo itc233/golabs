@@ -206,7 +206,7 @@ func (srv *PBServer) Start(command interface{}) (
 					prm_sv.commitIndex = prm_sv.commitIndex +1
 					//break
 				}
-			}else if(ok){
+			}else if(rpc_ok){
 				i = i-1
 			}
 		}
