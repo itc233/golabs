@@ -295,6 +295,8 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 			srv.commitIndex = rec_reply.PrimaryCommit
 			reply.Success = true
 			fmt.Printf("Recovery succeed %d\n", srv.log)
+		}else if(len(srv.log) >= args.Index){
+			reply.Success = true
 		}
 		//}
 	}
