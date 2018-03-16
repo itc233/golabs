@@ -204,7 +204,7 @@ func (srv *PBServer) Start(command interface{}) (
 				Entry: command,
 			}
 			rpc_ok := prm_sv.sendPrepare(i, &args ,&reply)
-			//fmt.Printf("count: %d, peer id: %d, result: %b\n", count, i, reply.Success)
+			fmt.Printf("count: %d, peer id: %d, result: %b\n", count, i, reply.Success)
 			if(rpc_ok && reply.Success){
 				count = count + 1
 				if(count == len(prm_sv.peers)/2 +1){
@@ -212,6 +212,8 @@ func (srv *PBServer) Start(command interface{}) (
 				}
 			}else if(rpc_ok){
 				i = i-1
+			}else if(!rpc_ok){
+				fmt.Printf("crtIndex %d server %d", prm_sv.crtIndex, i)
 			}
 		}
 		prm_sv.crtIndex = prm_sv.crtIndex + 1
