@@ -213,7 +213,7 @@ func (srv *PBServer) Start(command interface{}) (
 			}else if(rpc_ok && !reply.Success){
 				i = i-1
 			}
-			fmt.Printf("crtIndex %d server %d\n", prm_sv.crtIndex, i)
+			//fmt.Printf("crtIndex %d server %d\n", prm_sv.crtIndex, i)
 			if(rpc_ok == false){
 				fmt.Printf(" fail\n")
 			}
