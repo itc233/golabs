@@ -152,7 +152,7 @@ func Make(peers []*labrpc.ClientEnd, me int, startingView int) *PBServer {
 	// Your other initialization code here, if there's any
 	srv.doNext = make(chan bool, 1)
 	srv.doNext<-true
-	crtIndex = 0
+	srv.crtIndex = 0
 	return srv
 }
 
