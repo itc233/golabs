@@ -252,6 +252,7 @@ func (cfg *config) replicateOne(server int, cmd int, expectedServers int) (
 			for i := 0; i < len(cfg.pbservers); i++ {
 				ok, cmd1 := cfg.pbservers[i].GetEntryAtIndex(index)
 				if ok {
+					fmt.Printf("server %i cmd %d\n", cmd1)
 					if cmd2, ok2 := cmd1.(int); ok2 && cmd2 == cmd {
 						nReplicated++
 					}
