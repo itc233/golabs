@@ -204,7 +204,8 @@ func (srv *PBServer) Start(command interface{}) (
 				Entry: command,
 			}
 			var reply PrepareReply
-			rpc_ok := prm_sv.sendPrepare(i, &args ,&reply)
+			//rpc_ok := 
+			prm_sv.sendPrepare(i, &args ,&reply)
 			//fmt.Printf("count: %d, peer id: %d, result: %b\n", count, i, reply.Success)
 			if(reply.Success){
 				count = count + 1
