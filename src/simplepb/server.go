@@ -294,6 +294,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 			srv.currentView = rec_reply.View
 			srv.commitIndex = rec_reply.PrimaryCommit
 			reply.Success = true
+			fmt.Printf("Recovery succeed %d\n", srv.log)
 		}
 		//}
 	}
