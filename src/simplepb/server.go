@@ -204,10 +204,9 @@ func (srv *PBServer) Start(command interface{}) (
 				Entry: command,
 			}
 			var reply PrepareReply
-			//rpc_ok := 
-			prm_sv.sendPrepare(i, &args ,&reply)
+			rpc_ok := prm_sv.sendPrepare(i, &args ,&reply)
 			//fmt.Printf("count: %d, peer id: %d, result: %b\n", count, i, reply.Success)
-			if(reply.Success){
+			if(rpc_ok && reply.Success){
 				count = count + 1
 				if(count == len(prm_sv.peers)/2 +1){
 					prm_sv.commitIndex = prm_sv.commitIndex +1

@@ -257,6 +257,7 @@ func (cfg *config) replicateOne(server int, cmd int, expectedServers int) (
 					}
 				}
 			}
+			fmt.Printf("nReplicated %d\n", nReplicated)
 			if nReplicated >= expectedServers {
 				return index
 			}
