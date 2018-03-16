@@ -184,7 +184,7 @@ func (srv *PBServer) Start(command interface{}) (
 	view = srv.currentView
 	ok = true
 	log_len := len(srv.log)
-	fmt.Printf("primary command %d\n". command)
+	fmt.Printf("primary command %d\n", command)
 	// Your code here
 	//fmt.Printf("commitIndex: %d\n", srv.commitIndex)
 	fmt.Printf("log len: %d, primary: %d\n", len(srv.log), GetPrimary(srv.currentView, len(srv.peers)))
