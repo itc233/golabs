@@ -192,7 +192,7 @@ func (srv *PBServer) Start(command interface{}) (
 	go func(prm_sv *PBServer, command interface{}, log_len int) {
 		count := 0
 		for i := 0; i < len(prm_sv.peers); i++ {
-			if(prm_sv.crtIndex < log_len-2){
+			if(prm_sv.commitIndex < log_len-2){
 				i = i-1
 				continue
 			}
