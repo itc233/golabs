@@ -199,7 +199,7 @@ func (srv *PBServer) Start(command interface{}) (
 			}
 			rpc_ok := prm_sv.sendPrepare(i, &args ,&reply)
 			//fmt.Printf("count: %d, peer id: %d, result: %b\n", count, i, reply.Success)
-			if(reply.Success){
+			if(rpc_ok && reply.Success){
 				//fmt.Printf("docommit: %d, peers: %d\n", count, i)
 				count = count + 1
 				if(count == len(prm_sv.peers)/2 +1){
@@ -265,7 +265,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	}else if(srv.currentView < args.View || len(srv.log) == args.Index-1){
 		reply.Success = false
 		fmt.Printf("srv.currentViewv:%d args.View:%d len(srv.log):%d args.Index:%d\n", srv.currentView, args.View, len(srv.log), args.Index)
-		if(srv.currentView < args.View || len(srv.log) < args.Index){
+		if(srv.currentView < args.View || len(srv.log) == args.Index){
 			fmt.Printf("Recovery\n")
 		}
 			rec_arg := RecoveryArgs{
@@ -284,6 +284,8 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 			}
 		//}
 	}else{
+		fmt.Printf("succeed false: me %d, ", srv.me)
+		fmt.Printf("srv.currentViewv:%d args.View:%d len(srv.log):%d args.Index:%d\n", srv.currentView, args.View, len(srv.log), args.Index)
 		reply.Success = false
 	}
 }
