@@ -209,8 +209,8 @@ func (srv *PBServer) Start(command interface{}) (
 				count = count + 1
 				if(count == len(prm_sv.peers)/2 +1){
 					prm_sv.commitIndex = prm_sv.commitIndex +1
-				}
-			}else if(rpc_ok){
+				} 
+			}else if(rpc_ok && reply.Success == false){
 				i = i-1
 			}
 			/*fmt.Printf("crtIndex %d server %d\n", prm_sv.crtIndex, i)
