@@ -187,7 +187,7 @@ func (srv *PBServer) Start(command interface{}) (
 	ok = true
 	log_len := len(srv.log)
 	// Your code here
-	fmt.Printf("commitIndex: %d\n", srv.commitIndex)
+	//fmt.Printf("commitIndex: %d\n", srv.commitIndex)
 	fmt.Printf("log len: %d, primary: %d\n", len(srv.log), GetPrimary(srv.currentView, len(srv.peers)))
 	go func(prm_sv *PBServer, command interface{}, log_len int) {
 		count := 0
@@ -210,7 +210,7 @@ func (srv *PBServer) Start(command interface{}) (
 				count = count + 1
 				if(count == len(prm_sv.peers)/2 +1){
 					if(prm_sv.commitIndex < len(prm_sv.log)-1){
-						fmt.Printf("successful commit %d -> %d\n", prm_sv.commitIndex, log_len-1)
+						//fmt.Printf("successful commit %d -> %d\n", prm_sv.commitIndex, log_len-1)
 						prm_sv.commitIndex = len(prm_sv.log)-1
 					}
 				} 
@@ -276,7 +276,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 			fmt.Printf("Recovery\n")
 		}
 		//if(len(srv.log) >= args.Index){
-			fmt.Printf("srv.log %d, args.Index %d, command %d\n", srv.log, args.Index, args.Entry)
+			//fmt.Printf("srv.log %d, args.Index %d, command %d\n", srv.log, args.Index, args.Entry)
 		//}
 		rec_arg := RecoveryArgs{
 			View: args.View, // the view that the backup would like to synchronize with
@@ -290,12 +290,12 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 			srv.currentView = rec_reply.View
 			srv.commitIndex = rec_reply.PrimaryCommit
 			reply.Success = true
-			fmt.Printf("Recovery succeed srv: %d pri: %d\n", srv.log, rec_reply.Entries)
+			//fmt.Printf("Recovery succeed srv: %d pri: %d\n", srv.log, rec_reply.Entries)
 		}else if(len(srv.log) >= args.Index){
 			reply.Success = true
 		}
 		//}
-		fmt.Printf("Prepare srv %d commit index %d\n", srv.me, srv.commitIndex)
+		//fmt.Printf("Prepare srv %d commit index %d\n", srv.me, srv.commitIndex)
 	}
 	reply.View = srv.currentView
 }
