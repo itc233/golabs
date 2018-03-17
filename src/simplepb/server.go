@@ -246,15 +246,16 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 		reply.Success = true
 
 	}else if(srv.currentView < args.View || len(srv.log) < args.Index){
+		prim_id := GetPrimary(args.View, len(srv.peers))
+		fmt.Printf("server %d doing Recovery, primary %d, view %d\n", srv.me, prim_id, args.View)
 		reply.Success = false
 		rec_arg := RecoveryArgs{
 			View: args.View, // the view that the backup would like to synchronize with
 			Server: srv.me, // the server sending the Recovery RPC (for debugging)
 		}
 		var rec_reply RecoveryReply
-		prim_id := GetPrimary(args.View, len(srv.peers))
-		srv.peers[prim_id].Call("PBServer.Recovery", &rec_arg, &rec_reply)
-		if(rec_reply.Success){
+		rpy_ok := srv.peers[prim_id].Call("PBServer.Recovery", &rec_arg, &rec_reply)
+		if(rpy_ok && rec_reply.Success){
 			srv.log = rec_reply.Entries
 			srv.currentView = rec_reply.View
 			srv.commitIndex = rec_reply.PrimaryCommit
