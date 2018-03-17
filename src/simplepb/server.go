@@ -209,6 +209,7 @@ func (srv *PBServer) Start(command interface{}) (
 		}
 		prm_sv.crtIndex = prm_sv.crtIndex + 1
 	}(srv, command, log_len)
+	fmt.Printf("log %d\n", srv.log)
 	return index, view, ok
 }
 
