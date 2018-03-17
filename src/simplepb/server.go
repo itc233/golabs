@@ -407,6 +407,11 @@ func (srv *PBServer) StartView(args *StartViewArgs, reply *StartViewReply) {
 	// Your code here
 	srv.mu.Lock()
 	defer srv.mu.Unlock()
+	if(args.View < srv.currentView){
+		return
+	}else if(args.View == srv.currentView && len(args.Log) < len(srv.log)){
+		return
+	}
 	/*
 	View int           // the new view which has completed view-change
 	Log  []interface{} // the log associated with the new new
