@@ -209,9 +209,9 @@ func (srv *PBServer) Start(command interface{}) (
 			if(rpc_ok && reply.Success){
 				count = count + 1
 				if(count == len(prm_sv.peers)/2 +1){
-					if(prm_sv.commitIndex < len(prm_sv.log)-1){
+					if(prm_sv.commitIndex < log_len-1){
 						//fmt.Printf("successful commit %d -> %d\n", prm_sv.commitIndex, log_len-1)
-						prm_sv.commitIndex = len(prm_sv.log)-1
+						prm_sv.commitIndex = log_len-1
 					}
 				} 
 			}/*else if(rpc_ok && reply.Success == false){
@@ -291,11 +291,11 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 			srv.commitIndex = rec_reply.PrimaryCommit
 			reply.Success = true
 			//fmt.Printf("Recovery succeed srv: %d pri: %d\n", srv.log, rec_reply.Entries)
-		}else if(len(srv.log) >= args.Index){
-			reply.Success = true
 		}
 		//}
 		//fmt.Printf("Prepare srv %d commit index %d\n", srv.me, srv.commitIndex)
+	}else if(len(srv.log) >= args.Index){
+		reply.Success = true
 	}
 	reply.View = srv.currentView
 }
