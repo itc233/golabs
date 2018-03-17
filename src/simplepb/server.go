@@ -373,7 +373,7 @@ func (srv *PBServer) determineNewViewLog(successReplies []*ViewChangeReply) (
 		if rpy.LastNormalView > crt_view{
 			crt_view = rpy.LastNormalView
 			newViewLog = rpy.Log
-		}else if (rpy.LastNormalView == crt_view && len(rpy.Log) > len(newViewLog){
+		}else if (rpy.LastNormalView == crt_view && len(rpy.Log) > len(newViewLog)){
 			newViewLog = rpy.Log
 		}
 	}
