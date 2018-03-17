@@ -238,7 +238,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	// Your code here
 	srv.mu.Lock()
 	defer srv.mu.Unlock()
-	if (srv.status != NORMAL || srv.View > args.View){
+	if (srv.status != NORMAL || srv.currentView > args.View){
 		reply.Success = false
 	}else if(srv.me == GetPrimary(args.View, len(srv.peers))){
 		reply.Success = true
