@@ -391,7 +391,7 @@ func (srv *PBServer) ViewChange(args *ViewChangeArgs, reply *ViewChangeReply) {
 	Log            []interface{} // the log at the server
 	Success        bool          
 	*/
-	fmt.Printf("View change: srv %d crt_view %d arg.view %d\n", srv.me, srv.currentView, args.View)
+	//fmt.Printf("View change: srv %d crt_view %d arg.view %d\n", srv.me, srv.currentView, args.View)
 	if(args.View > srv.currentView){
 		srv.status = VIEWCHANGE
 		reply.Success = true
