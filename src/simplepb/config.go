@@ -279,6 +279,7 @@ func (cfg *config) viewChange(newView int) {
 	t0 := time.Now()
 	for time.Since(t0).Seconds() < 10 {
 		view, ok := pri.ViewStatus()
+		fmt.Printf("view %d, ok %b\n", view, ok)
 		if ok && view >= newView {
 			return
 		}
