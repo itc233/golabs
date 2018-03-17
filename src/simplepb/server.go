@@ -179,24 +179,17 @@ func (srv *PBServer) Start(command interface{}) (
 	} else if GetPrimary(srv.currentView, len(srv.peers)) != srv.me {
 		return -1, srv.currentView, false
 	}
-	//<-srv.doNext
+	
 	srv.log = append(srv.log, command)
 	index = len(srv.log)-1
-	//index = len(srv.log)-2
 	view = srv.currentView
 	ok = true
 	log_len := len(srv.log)
 	// Your code here
-	//fmt.Printf("commitIndex: %d\n", srv.commitIndex)
 	fmt.Printf("log len: %d, primary: %d\n", len(srv.log), GetPrimary(srv.currentView, len(srv.peers)))
 	go func(prm_sv *PBServer, command interface{}, log_len int) {
 		count := 0
 		for i := 0; i < len(prm_sv.peers); i++ {
-			//fmt.Printf("prm_sv.commitIndex: %d, len of log: %d\n", prm_sv.commitIndex, log_len)
-			/*if(prm_sv.crtIndex < log_len-2){
-				i = 0
-				continue
-			}*/
 			args := PrepareArgs{
 				View: prm_sv.currentView,
 				PrimaryCommit: prm_sv.commitIndex,
@@ -205,27 +198,17 @@ func (srv *PBServer) Start(command interface{}) (
 			}
 			var reply PrepareReply
 			rpc_ok := prm_sv.sendPrepare(i, &args ,&reply)
-			//fmt.Printf("count: %d, peer id: %d, result: %b\n", count, i, reply.Success)
 			if(rpc_ok && reply.Success){
 				count = count + 1
 				if(count == len(prm_sv.peers)/2 +1){
 					if(prm_sv.commitIndex < log_len-1){
-						//fmt.Printf("successful commit %d -> %d\n", prm_sv.commitIndex, log_len-1)
 						prm_sv.commitIndex = log_len-1
 					}
 				} 
-			}/*else if(rpc_ok && reply.Success == false){
-				i = i-1
-			}*/
-			/*fmt.Printf("crtIndex %d server %d\n", prm_sv.crtIndex, i)
-			if(rpc_ok == false){
-				fmt.Printf(" fail\n")
-			}*/
+			}
 		}
 		prm_sv.crtIndex = prm_sv.crtIndex + 1
-		//prm_sv.doNext<-true
 	}(srv, command, log_len)
-	//srv.commitIndex = srv.commitIndex+1
 	return index, view, ok
 }
 
@@ -254,30 +237,18 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	// Your code here
 	srv.mu.Lock()
 	defer srv.mu.Unlock()
-	/*
-	View    int  // the backup's current view
-	Success bool // whether the Prepare request has been accepted or rejected
-	*/
-	/*fmt.Printf("Fail server: %d Primary view: %d Primary index: %d srv.view: %d srv.log: %d\n", 
-			srv.me, args.View, args.Index, srv.currentView, len(srv.log))*/
 	if(srv.me == GetPrimary(args.View, len(srv.peers))){
 		reply.Success = true
 	}else if(args.View == srv.currentView && args.Index == len(srv.log)){
-		//fmt.Printf("srv.me %d arg.Index %d len(srv.log) %d\n", srv.me, args.Index, srv.log)
 		srv.log = append(srv.log, args.Entry)
-		//srv.commitIndex = srv.commitIndex+1
 		srv.commitIndex = args.PrimaryCommit
 		reply.Success = true
 
 	}else if(srv.currentView < args.View || len(srv.log) < args.Index){
 		reply.Success = false
-		//fmt.Printf("srv.currentViewv:%d args.View:%d len(srv.log):%d args.Index:%d\n", srv.currentView, args.View, len(srv.log), args.Index)
 		if(srv.currentView < args.View || len(srv.log) < args.Index){
 			fmt.Printf("Recovery\n")
 		}
-		//if(len(srv.log) >= args.Index){
-			//fmt.Printf("srv.log %d, args.Index %d, command %d\n", srv.log, args.Index, args.Entry)
-		//}
 		rec_arg := RecoveryArgs{
 			View: args.View, // the view that the backup would like to synchronize with
 			Server: srv.me, // the server sending the Recovery RPC (for debugging)
@@ -290,10 +261,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 			srv.currentView = rec_reply.View
 			srv.commitIndex = rec_reply.PrimaryCommit
 			reply.Success = true
-			//fmt.Printf("Recovery succeed srv: %d pri: %d\n", srv.log, rec_reply.Entries)
 		}
-		//}
-		//fmt.Printf("Prepare srv %d commit index %d\n", srv.me, srv.commitIndex)
 	}else if(len(srv.log) >= args.Index){
 		reply.Success = true
 	}
