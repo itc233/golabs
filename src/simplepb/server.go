@@ -416,7 +416,7 @@ func (srv *PBServer) StartView(args *StartViewArgs, reply *StartViewReply) {
 	View int           // the new view which has completed view-change
 	Log  []interface{} // the log associated with the new new
 	*/
-	fmt.Printf("View change: srv %d crt_view %d arg.view %d\n", srv.me, srv.currentView, args.View)
+	//fmt.Printf("View change: srv %d crt_view %d arg.view %d\n", srv.me, srv.currentView, args.View)
 	srv.log = args.Log
 	srv.currentView = args.View
 	srv.status = NORMAL
