@@ -239,7 +239,6 @@ func (cfg *config) replicateOne(server int, cmd int, expectedServers int) (
 	cfg.mu.Unlock()
 	index, _, ok := pri.Start(cmd)
 	if !ok {
-		fmt.Printf("rejected cmd %d\n", cmd)
 		cfg.t.Fatalf("node-%d rejected command\n", server)
 	}
 	// primary submitted our request, wait for a while for

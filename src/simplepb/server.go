@@ -355,6 +355,8 @@ func (srv *PBServer) PromptViewChange(newView int) {
 func (srv *PBServer) determineNewViewLog(successReplies []*ViewChangeReply) (
 	ok bool, newViewLog []interface{}) {
 	// Your code here
+	srv.mu.Lock()
+	defer srv.mu.Unlock()
 	/*
 	LastNormalView int           // the latest view which had a NORMAL status at the server
 	Log            []interface{} // the log at the server
@@ -381,6 +383,8 @@ func (srv *PBServer) determineNewViewLog(successReplies []*ViewChangeReply) (
 // ViewChange is the RPC handler to process ViewChange RPC.
 func (srv *PBServer) ViewChange(args *ViewChangeArgs, reply *ViewChangeReply) {
 	// Your code here
+	srv.mu.Lock()
+	defer srv.mu.Unlock()
 	//View int
 	/*
 	LastNormalView int           // the latest view which had a NORMAL status at the server
@@ -401,6 +405,8 @@ func (srv *PBServer) ViewChange(args *ViewChangeArgs, reply *ViewChangeReply) {
 // StartView is the RPC handler to process StartView RPC.
 func (srv *PBServer) StartView(args *StartViewArgs, reply *StartViewReply) {
 	// Your code here
+	srv.mu.Lock()
+	defer srv.mu.Unlock()
 	/*
 	View int           // the new view which has completed view-change
 	Log  []interface{} // the log associated with the new new
