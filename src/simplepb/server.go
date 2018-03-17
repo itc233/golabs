@@ -249,7 +249,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 
 	}else if(srv.currentView < args.View || len(srv.log) < args.Index){
 		prim_id := GetPrimary(args.View, len(srv.peers))
-		fmt.Printf("server %d doing Recovery, primary %d, view %d\n", srv.me, prim_id, args.View)
+		//fmt.Printf("server %d doing Recovery, primary %d, view %d\n", srv.me, prim_id, args.View)
 		reply.Success = false
 		rec_arg := RecoveryArgs{
 			View: args.View, // the view that the backup would like to synchronize with
@@ -263,7 +263,7 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 			srv.commitIndex = rec_reply.PrimaryCommit
 			reply.Success = true
 		}
-		fmt.Printf("after Recovery %d\n", srv.log)
+		//fmt.Printf("after Recovery %d\n", srv.log)
 	}else if(len(srv.log) >= args.Index){
 		reply.Success = true
 	}
