@@ -358,15 +358,55 @@ func (srv *PBServer) PromptViewChange(newView int) {
 func (srv *PBServer) determineNewViewLog(successReplies []*ViewChangeReply) (
 	ok bool, newViewLog []interface{}) {
 	// Your code here
+	/*
+	LastNormalView int           // the latest view which had a NORMAL status at the server
+	Log            []interface{} // the log at the server
+	Success        bool          
+	*/
+	crt_view := 0
+	if len(successReplies) == 0{
+		ok = false
+	}else{
+		ok = true
+	}
+	for rpy := range successReplies{
+		if rpy.LastNormalView > crt_view{
+			crt_view = rpy.LastNormalView
+			newViewLog = rpy.Log
+		}else if (rpy.LastNormalView == crt_view && len(rpy.Log) > len(newViewLog){
+			newViewLog = rpy.Log
+		}
+	}
 	return ok, newViewLog
 }
 
 // ViewChange is the RPC handler to process ViewChange RPC.
 func (srv *PBServer) ViewChange(args *ViewChangeArgs, reply *ViewChangeReply) {
 	// Your code here
+	//View int
+	/*
+	LastNormalView int           // the latest view which had a NORMAL status at the server
+	Log            []interface{} // the log at the server
+	Success        bool          
+	*/
+	if(args.View > srv.currentView){
+		srv.status = VIEWCHANGE
+		reply.Success = true
+		reply.Log = srv.log
+		reply.LastNormalView = srv.currentView
+	}else{
+		reply.Success = false
+	}
 }
 
 // StartView is the RPC handler to process StartView RPC.
 func (srv *PBServer) StartView(args *StartViewArgs, reply *StartViewReply) {
 	// Your code here
+	/*
+	View int           // the new view which has completed view-change
+	Log  []interface{} // the log associated with the new new
+	*/
+	srv.log = args.Log
+	srv.currentView = args.View
+	srv.status = NORMAL
 }
