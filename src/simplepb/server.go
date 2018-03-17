@@ -209,9 +209,9 @@ func (srv *PBServer) Start(command interface{}) (
 			if(rpc_ok && reply.Success){
 				count = count + 1
 				if(count == len(prm_sv.peers)/2 +1){
-					if(prm_sv.commitIndex < log_len-1){
+					if(prm_sv.commitIndex < len(prm_sv.log)-1){
 						fmt.Printf("successful commit %d -> %d\n", prm_sv.commitIndex, log_len-1)
-						prm_sv.commitIndex = log_len-1
+						prm_sv.commitIndex = len(prm_sv.log)-1
 					}
 				} 
 			}/*else if(rpc_ok && reply.Success == false){
