@@ -369,12 +369,13 @@ func (srv *PBServer) determineNewViewLog(successReplies []*ViewChangeReply) (
 	}else{
 		ok = true
 	}
-	for rpy := range successReplies{
-		if rpy.LastNormalView > crt_view{
-			crt_view = rpy.LastNormalView
-			newViewLog = rpy.Log
-		}else if (rpy.LastNormalView == crt_view && len(rpy.Log) > len(newViewLog)){
-			newViewLog = rpy.Log
+	//for rpy := range successReplies{
+	for i:= 0; i < len(successReplies); i++{
+		if successReplies[i].LastNormalView > crt_view{
+			crt_view = successReplies[i].LastNormalView
+			newViewLog = successReplies[i].Log
+		}else if (successReplies[i].LastNormalView == crt_view && len(successReplies[i].Log) > len(newViewLog)){
+			newViewLog = successReplies[i].Log
 		}
 	}
 	return ok, newViewLog
