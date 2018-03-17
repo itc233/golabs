@@ -286,12 +286,11 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 		prim_id := GetPrimary(args.View, len(srv.peers))
 		srv.peers[prim_id].Call("PBServer.Recovery", &rec_arg, &rec_reply)
 		if(rec_reply.Success){
-			fmt.Printf("Recovery succeed\n")
 			srv.log = rec_reply.Entries
 			srv.currentView = rec_reply.View
 			srv.commitIndex = rec_reply.PrimaryCommit
 			reply.Success = true
-			fmt.Printf("Recovery succeed %d\n", srv.log)
+			fmt.Printf("Recovery succeed srv: %d pri: %d\n", srv.log, rec_reply.Entries)
 		}else if(len(srv.log) >= args.Index){
 			reply.Success = true
 		}
