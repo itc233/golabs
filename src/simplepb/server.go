@@ -229,12 +229,6 @@ func (srv *PBServer) Start(command interface{}) (
 	return index, view, ok
 }
 
-func (srv *PBServer) CommitIdx(args *CommitArg, reply *CommitReply) {
-	srv.mu.Lock()
-	defer srv.mu.Unlock()
-	srv.commitIndex = args.PrimaryCommit
-}
-
 // exmple code to send an AppendEntries RPC to a server.
 // server is the index of the target server in srv.peers[].
 // expects RPC arguments in args.
