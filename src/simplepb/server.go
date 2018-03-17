@@ -238,7 +238,9 @@ func (srv *PBServer) Prepare(args *PrepareArgs, reply *PrepareReply) {
 	// Your code here
 	srv.mu.Lock()
 	defer srv.mu.Unlock()
-	if(srv.me == GetPrimary(args.View, len(srv.peers))){
+	if (srv.status != NORMAL || srv.View > args.View){
+		reply.Success = false
+	}else if(srv.me == GetPrimary(args.View, len(srv.peers))){
 		reply.Success = true
 	}else if(args.View == srv.currentView && args.Index == len(srv.log)){
 		srv.log = append(srv.log, args.Entry)
